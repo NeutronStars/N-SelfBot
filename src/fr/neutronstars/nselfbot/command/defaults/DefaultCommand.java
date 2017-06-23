@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 /**
  * Default Command of NSelfBot
  * @author NeutronStars
- * @version 1.1.0
+ * @version 1.0.0
  * @since 1.0.0
  */
 public final class DefaultCommand implements CommandManager {
@@ -55,6 +55,7 @@ public final class DefaultCommand implements CommandManager {
 		}
 		EmbedBuilder builder = new EmbedBuilder();
 		builder.setTitle("Plugins list");
+		builder.setDescription("|--------------|");
 		for(NSelfBotPlugin plugin : NSelfBot.getNSelfBot().getPluginManager().getPlugins()){
 			builder.addField(new Field(plugin.getName(), "[>](1) Version : "+plugin.getVersion()+"\n[>](2) Author(s) : "+plugin.getAuthorsToString(), true));
 		}
