@@ -12,6 +12,7 @@ import fr.neutronstars.nselfbot.entity.Channel;
 import fr.neutronstars.nselfbot.entity.CommandSender;
 import fr.neutronstars.nselfbot.entity.ConsoleEntity;
 import fr.neutronstars.nselfbot.entity.UserEntity;
+import fr.neutronstars.nselfbot.plugin.NSelfBotPlugin;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 
@@ -37,8 +38,34 @@ public final class DefaultCommand implements CommandManager {
 	 */
 	@Command(name="help",description="Shows the command list.",alias={"?"})
 	private void help(CommandSender sender, Channel channel){
-		if(sender instanceof ConsoleEntity) helpConsole(sender.getConsoleEntity());
+		if(sender.isConsoleEntity()) helpConsole(sender.getConsoleEntity());
 		else helpUser(sender.getUserEntity(), channel);
+	}
+
+	@Command(name="plugins",description="Show the plugins list.",alias={"plgs"})
+	private void plugins(CommandSender sender, Channel channel){
+		if(sender.isConsoleEntity()){
+			StringBuilder builder = new StringBuilder("Plugins list :");
+			for(NSelfBotPlugin plugin : NSelfBot.getNSelfBot().getPluginManager().getPlugins()){
+				builder.append("\n").append(plugin.getName()).append("\n   version : ").append(plugin.getVersion()).append("\n   author(s) : ").append(plugin.getAuthorsToString());
+			}
+			if(builder.length() < 15) builder.append("\nDon't use a plugin.");
+			sender.getConsoleEntity().sendMessage(builder.toString());
+			return;
+		}
+		EmbedBuilder builder = new EmbedBuilder();
+		builder.setTitle("Plugins list");
+		for(NSelfBotPlugin plugin : NSelfBot.getNSelfBot().getPluginManager().getPlugins()){
+			builder.addField(new Field(plugin.getName(), "[>](1) Version : "+plugin.getVersion()+"\n[>](2) Author(s) : "+plugin.getAuthorsToString(), true));
+		}
+		if(builder.getFields().size() == 0) builder.setDescription("Don't use a plugin.");
+		builder.setFooter("Using API NSelfBot v"+NSelfBot.getNSelfBot().getVersion()+" created by NeutronStars", null);
+		builder.setColor(Color.MAGENTA);
+		try{
+			channel.sendMessage(builder.build());
+		}catch (Exception e){
+			channel.sendMessage(e.getMessage());
+		}
 	}
 	
 	private void helpConsole(ConsoleEntity sender){
@@ -82,14 +109,25 @@ public final class DefaultCommand implements CommandManager {
 	
 	@Command(name="info",description="Info NSelfBot.")
 	private void info(CommandSender sender, Channel channel){
-		String info = "\nInfo NSelfBot: \n  -Created by NeutronStars"
-				 	 +"\nVersion: "+ NSelfBot.getNSelfBot().getVersion();
 		if(sender.isConsoleEntity())
 			sender.getConsoleEntity().sendMessage("\n========================================"
-												 + info
+												 +"\nNSelfBot: \n  -Created by NeutronStars"
+												 +"\nVersion: "+ NSelfBot.getNSelfBot().getVersion()
+												 +"\nLink:\n  GitHub: https://github.com/NeutronStars/N-SelfBot"
 												 +"\n========================================");
-		else channel.sendMessage("```yml\n"+info+"```");
-		
-			
+		else{
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.setTitle("NSelfBot");
+			builder.addField("Version", NSelfBot.getNSelfBot().getVersion(), true);
+			builder.addField("GitHub", "[>](1) https://github.com/NeutronStars/N-SelfBot", true);
+			builder.setFooter("Created by NeutronStars", null);
+			builder.setColor(Color.BLUE);
+
+			try {
+				channel.sendMessage(builder.build());
+			}catch (Exception e){
+				channel.sendMessage(e.getMessage());
+			}
+		}
 	}
 }
