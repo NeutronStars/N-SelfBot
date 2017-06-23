@@ -44,7 +44,16 @@ public abstract class NSelfBotPlugin {
 	public void setVersion(String version) {
 		this.version = version != null ? version : "1.0";
 	}
-	
+
+	public String getAuthorsToString(){
+		StringBuilder builder = new StringBuilder();
+		for(String name : getAuthors()){
+			if(builder.length() != 0) builder.append(", ");
+			builder.append(name);
+		}
+		return builder.length() != 0 ? builder.toString() : builder.append("Not author").toString();
+	}
+
 	/**
 	 * Register a command in the application.
 	 * @param commandManager

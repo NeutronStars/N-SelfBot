@@ -3,6 +3,8 @@ package fr.neutronstars.nselfbot.plugin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -79,7 +81,18 @@ public final class PluginManager {
 	public NSelfBotPlugin getPlugin(String name){
 		return plugins.get(name);
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public <T extends NSelfBotPlugin> T getPlugin(Class<T> clazz){
+		for(NSelfBotPlugin plugin : getPlugins()){
+			if(plugin.getClass() == clazz) return (T) plugin;
+		}
+		return null;
+	}
+
+	public Collection<NSelfBotPlugin> getPlugins(){
+		return new ArrayList<>(plugins.values());
+	}
 	/**
 	 * Register a command in the application.
 	 * @param commandManager
